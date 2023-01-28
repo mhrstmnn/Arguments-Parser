@@ -1,7 +1,13 @@
-# This is just an example to get you started. A typical library package
-# exports the main API in this file. Note that you cannot rename this file
-# but you can remove it if you wish.
+## A parser for command line arguments
 
-proc add*(x, y: int): int =
-  ## Adds two files together.
-  return x + y
+import std/[os, tables]
+
+type Arguments* = object
+  input*: seq[string]
+  shortKeys*: seq[string]
+  keys*: seq[string]
+  values*: Table[string, seq[string]]
+
+proc parseInput*(arguments = commandLineParams()): Arguments =
+  ## Parses all command line arguments into one arguments object
+  echo arguments
