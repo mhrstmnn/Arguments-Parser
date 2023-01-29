@@ -32,9 +32,12 @@ test "one key with two value":
 
 test "one short key":
   check parseInput(@["-f"]) == newArguments(shortKeys = @["f"])
+  check parseInput(@["-fb"]) == newArguments(shortKeys = @["fb"])
 
 test "multiple short keys":
-  check parseInput(@["-abcd"]) == newArguments(shortKeys = @["a", "b", "c", "d"])
+  check parseInput(@["-a", "-b", "-c", "-d"]) == newArguments(
+      shortKeys = @["a", "b", "c", "d"]
+    )
 
 test "one short key with one value":
   check parseInput(@["-f:bar"]) == newArguments(
