@@ -1,2 +1,3 @@
 Arguments_Parser
-tests/test1
+tests/test*
+!tests/test*.nim
