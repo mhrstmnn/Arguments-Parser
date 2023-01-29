@@ -5,6 +5,7 @@ author        = "Michael Horstmann"
 description   = "Arguments-Parser"
 license       = "MIT"
 srcDir        = "src"
+bin           = @["Arguments_Parser"]
 
 
 # Dependencies
