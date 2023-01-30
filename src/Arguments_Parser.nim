@@ -20,6 +20,11 @@ proc newArguments*(
     values: values
   )
 
+proc addSplitArgument(argument: string, sep: string, arguments: var Arguments) =
+  let splitArgument = argument.split(sep)
+  arguments.keys.add(splitArgument[0])
+  arguments.values[splitArgument[0]].add(splitArgument[1])
+
 proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
   ## Parses all command line arguments into one arguments object
 
@@ -39,20 +44,16 @@ proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
         result.input.add(argument)
       of long:
         if argument.contains(":"):
-          result.keys.add(argument.split(":")[0])
-          result.values[argument.split(":")[0]].add(argument.split(":")[1])
+          addSplitArgument(argument, ":", result)
         elif argument.contains("="):
-          result.keys.add(argument.split("=")[0])
-          result.values[argument.split("=")[0]].add(argument.split("=")[1])
+          addSplitArgument(argument, "=", result)
         else:
           result.values[result.keys[^1]].add(argument)
       of short:
         if argument.contains(":"):
-          result.shortKeys.add(argument.split(":")[0])
-          result.values[argument.split(":")[0]].add(argument.split(":")[1])
+          addSplitArgument(argument, ":", result)
         elif argument.contains("="):
-          result.shortKeys.add(argument.split("=")[0])
-          result.values[argument.split("=")[0]].add(argument.split("=")[1])
+          addSplitArgument(argument, "=", result)
         else:
           result.values[result.shortKeys[^1]].add(argument)
 
