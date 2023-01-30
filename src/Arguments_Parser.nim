@@ -24,9 +24,42 @@ proc newArguments*(
   values: values
 )
 
+proc addKeysAndValues(
+  prefix, argument: string,
+  keys: var seq[string],
+  values: var Table[string, seq[string]],
+  firstElement: bool
+) =
+  if argument.contains(":"):
+    let splitArgument = argument.split(":")
+    var key = splitArgument[0]
+    key.removePrefix(prefix)
+    if not (key in keys):
+      keys.add(key)
+      values[key] = newSeq[string]()
+    values[key].add(splitArgument[1])
+  elif argument.contains("="):
+    let splitArgument = argument.split("=")
+    var key = splitArgument[0]
+    key.removePrefix(prefix)
+    if not (key in keys):
+      keys.add(key)
+      values[key] = newSeq[string]()
+    values[key].add(splitArgument[1])
+  else:
+    if firstElement:
+      var key = argument
+      key.removePrefix(prefix)
+      if not (key in keys):
+        keys.add(key)
+        values[key] = newSeq[string]()
+    else:
+      values[keys[^1]].add(argument)
+
 proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
   ## Parses all command line arguments into one arguments object
   var argumentType = input
+
   for argument in arguments:
     var firstElement = false
 
@@ -41,56 +74,8 @@ proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
       of input:
         result.input.add(argument)
       of long:
-        if argument.contains(":"):
-          let splitArgument = argument.split(":")
-          var key = splitArgument[0]
-          key.removePrefix("--")
-          if not (key in result.keys):
-            result.keys.add(key)
-            result.values[key] = newSeq[string]()
-          result.values[key].add(splitArgument[1])
-        elif argument.contains("="):
-          let splitArgument = argument.split("=")
-          var key = splitArgument[0]
-          key.removePrefix("--")
-          if not (key in result.keys):
-            result.keys.add(key)
-            result.values[key] = newSeq[string]()
-          result.values[key].add(splitArgument[1])
-        else:
-          if firstElement:
-            var key = argument
-            key.removePrefix("--")
-            if not (key in result.keys):
-              result.keys.add(key)
-              result.values[key] = newSeq[string]()
-          else:
-            result.values[result.keys[^1]].add(argument)
+        addKeysAndValues("--", argument, result.keys, result.values, firstElement)
       of short:
-        if argument.contains(":"):
-          let splitArgument = argument.split(":")
-          var key = splitArgument[0]
-          key.removePrefix("-")
-          if not (key in result.shortKeys):
-            result.shortKeys.add(key)
-            result.values[key] = newSeq[string]()
-          result.values[key].add(splitArgument[1])
-        elif argument.contains("="):
-          let splitArgument = argument.split("=")
-          var key = splitArgument[0]
-          key.removePrefix("-")
-          if not (key in result.shortKeys):
-            result.shortKeys.add(key)
-            result.values[key] = newSeq[string]()
-          result.values[key].add(splitArgument[1])
-        else:
-          if firstElement:
-            var key = argument
-            key.removePrefix("-")
-            if not (key in result.shortKeys):
-              result.shortKeys.add(key)
-              result.values[key] = newSeq[string]()
-          else:
-            result.values[result.shortKeys[^1]].add(argument)
+        addKeysAndValues("-", argument, result.shortKeys, result.values, firstElement)
 
 echo "Arguments: ", parseInput()
