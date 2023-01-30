@@ -2,7 +2,7 @@
 
 version       = "0.1.0"
 author        = "Michael Horstmann"
-description   = "Arguments-Parser"
+description   = "A parser for command line arguments"
 license       = "MIT"
 srcDir        = "src"
 bin           = @["Arguments_Parser"]
