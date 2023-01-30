@@ -78,5 +78,3 @@ proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
         checkArgument("--", argument, result.keys, result.values, firstElement)
       of short:
         checkArgument("-", argument, result.shortKeys, result.values, firstElement)
-
-echo "Arguments: ", parseInput()
