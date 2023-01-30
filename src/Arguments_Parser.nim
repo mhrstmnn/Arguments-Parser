@@ -43,35 +43,41 @@ proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
       of long:
         if argument.contains(":"):
           let splitArgument = argument.split(":")
-          result.keys.add(splitArgument[0])
+          if not (splitArgument[0] in result.keys):
+            result.keys.add(splitArgument[0])
           result.values[splitArgument[0]].add(splitArgument[1])
         elif argument.contains("="):
           let splitArgument = argument.split("=")
-          result.keys.add(splitArgument[0])
+          if not (splitArgument[0] in result.keys):
+            result.keys.add(splitArgument[0])
           result.values[splitArgument[0]].add(splitArgument[1])
         else:
           if firstElement:
             var key = argument
             key.removePrefix("--")
-            result.keys.add(key)
-            result.values[key] = newSeq[string]()
+            if not (key in result.keys):
+              result.keys.add(key)
+              result.values[key] = newSeq[string]()
           else:
             result.values[result.keys[^1]].add(argument)
       of short:
         if argument.contains(":"):
           let splitArgument = argument.split(":")
-          result.shortKeys.add(splitArgument[0])
+          if not (splitArgument[0] in result.shortKeys):
+            result.shortKeys.add(splitArgument[0])
           result.values[splitArgument[0]].add(splitArgument[1])
         elif argument.contains("="):
           let splitArgument = argument.split("=")
-          result.shortKeys.add(splitArgument[0])
+          if not (splitArgument[0] in result.shortKeys):
+            result.shortKeys.add(splitArgument[0])
           result.values[splitArgument[0]].add(splitArgument[1])
         else:
           if firstElement:
             var key = argument
             key.removePrefix("-")
-            result.shortKeys.add(key)
-            result.values[key] = newSeq[string]()
+            if not (key in result.shortKeys):
+              result.shortKeys.add(key)
+              result.values[key] = newSeq[string]()
           else:
             result.values[result.shortKeys[^1]].add(argument)
 
