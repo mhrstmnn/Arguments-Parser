@@ -70,7 +70,7 @@ proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
         if argument.contains(":"):
           let splitArgument = argument.split(":")
           var key = splitArgument[0]
-          key.removePrefix("--")
+          key.removePrefix("-")
           if not (key in result.shortKeys):
             result.shortKeys.add(key)
             result.values[key] = newSeq[string]()
@@ -78,7 +78,7 @@ proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
         elif argument.contains("="):
           let splitArgument = argument.split("=")
           var key = splitArgument[0]
-          key.removePrefix("--")
+          key.removePrefix("-")
           if not (key in result.shortKeys):
             result.shortKeys.add(key)
             result.values[key] = newSeq[string]()
