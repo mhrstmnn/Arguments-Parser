@@ -24,7 +24,19 @@ proc newArguments*(
   values: values
 )
 
-proc addKeysAndValues(
+proc addKeyAndValue(
+  key: string,
+  value: string,
+  keys: var seq[string],
+  values: var Table[string, seq[string]]
+) =
+  if not (key in keys):
+    keys.add(key)
+    values[key] = newSeq[string]()
+  if value != "":
+    values[key].add(value)
+
+proc checkArgument(
   prefix, argument: string,
   keys: var seq[string],
   values: var Table[string, seq[string]],
@@ -34,48 +46,37 @@ proc addKeysAndValues(
     let splitArgument = argument.split(":")
     var key = splitArgument[0]
     key.removePrefix(prefix)
-    if not (key in keys):
-      keys.add(key)
-      values[key] = newSeq[string]()
-    values[key].add(splitArgument[1])
+    addKeyAndValue(key, splitArgument[1], keys, values)
   elif argument.contains("="):
     let splitArgument = argument.split("=")
     var key = splitArgument[0]
     key.removePrefix(prefix)
-    if not (key in keys):
-      keys.add(key)
-      values[key] = newSeq[string]()
-    values[key].add(splitArgument[1])
+    addKeyAndValue(key, splitArgument[1], keys, values)
   else:
     if firstElement:
       var key = argument
       key.removePrefix(prefix)
-      if not (key in keys):
-        keys.add(key)
-        values[key] = newSeq[string]()
+      addKeyAndValue(key, "", keys, values)
     else:
       values[keys[^1]].add(argument)
 
 proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
   ## Parses all command line arguments into one arguments object
   var argumentType = input
-
   for argument in arguments:
     var firstElement = false
-
     if argument.startsWith("--"):
       argumentType = long
       firstElement = true
     elif argument.startsWith("-"):
       argumentType = short
       firstElement = true
-
     case argumentType
       of input:
         result.input.add(argument)
       of long:
-        addKeysAndValues("--", argument, result.keys, result.values, firstElement)
+        checkArgument("--", argument, result.keys, result.values, firstElement)
       of short:
-        addKeysAndValues("-", argument, result.shortKeys, result.values, firstElement)
+        checkArgument("-", argument, result.shortKeys, result.values, firstElement)
 
 echo "Arguments: ", parseInput()
