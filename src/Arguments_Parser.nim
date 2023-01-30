@@ -26,12 +26,8 @@ proc newArguments*(
 
 proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
   ## Parses all command line arguments into one arguments object
-
   var argumentType = input
-
   for argument in arguments:
-    echo argument
-
     var firstElement = false
 
     if argument.startsWith("--"):
@@ -55,7 +51,10 @@ proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
           result.values[splitArgument[0]].add(splitArgument[1])
         else:
           if firstElement:
-            result.keys.add(argument)
+            var key = argument
+            key.removePrefix("--")
+            result.keys.add(key)
+            result.values[key] = newSeq[string]()
           else:
             result.values[result.keys[^1]].add(argument)
       of short:
@@ -69,7 +68,10 @@ proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
           result.values[splitArgument[0]].add(splitArgument[1])
         else:
           if firstElement:
-            result.shortKeys.add(argument)
+            var key = argument
+            key.removePrefix("-")
+            result.shortKeys.add(key)
+            result.values[key] = newSeq[string]()
           else:
             result.values[result.shortKeys[^1]].add(argument)
 
