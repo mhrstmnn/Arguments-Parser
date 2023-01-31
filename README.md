@@ -2,11 +2,11 @@
 
 A parser for command line arguments
 
-TODO: Add screenshots
+## Usage
 
-## Installation
-
-`nimble install`
+- Install package: `nimble install`
+- Add to dependencies: `requires "arguments_parser"` in `*.nimble`
+- Add to code: `import arguments_parser` in `*.nim`
 
 ## License
 
