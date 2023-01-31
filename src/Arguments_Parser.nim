@@ -4,18 +4,14 @@ import std/[os, tables, strutils]
 
 type
   Arguments = object
-    input: seq[string]
-    keys: seq[string]
-    shortKeys: seq[string]
+    input, keys, shortKeys: seq[string]
     values: Table[string, seq[string]]
 
   Argument = enum
     input, long, short
 
 proc newArguments*(
-  input = newSeq[string](),
-  keys = newSeq[string](),
-  shortKeys = newSeq[string](),
+  input, keys, shortKeys = newSeq[string](),
   values = initTable[string, seq[string]]()
 ): Arguments = Arguments(
   input: input,
@@ -25,8 +21,7 @@ proc newArguments*(
 )
 
 proc addKeyAndValue(
-  key: string,
-  value: string,
+  key, value: string,
   keys: var seq[string],
   values: var Table[string, seq[string]]
 ) =
