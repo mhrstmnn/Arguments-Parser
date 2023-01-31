@@ -30,7 +30,7 @@ proc addKeyAndValue(
   keys: var seq[string],
   values: var Table[string, seq[string]]
 ) =
-  if not (key in keys):
+  if key != "" and not (key in keys):
     keys.add(key)
     values[key] = newSeq[string]()
   if value != "":
@@ -38,9 +38,9 @@ proc addKeyAndValue(
 
 proc checkArgument(
   prefix, argument: string,
+  firstElement: bool,
   keys: var seq[string],
-  values: var Table[string, seq[string]],
-  firstElement: bool
+  values: var Table[string, seq[string]]
 ) =
   if argument.contains(":"):
     let splitArgument = argument.split(":")
@@ -58,23 +58,18 @@ proc checkArgument(
       key.removePrefix(prefix)
       addKeyAndValue(key, "", keys, values)
     else:
-      values[keys[^1]].add(argument)
+      if keys.len > 0:
+        values[keys[^1]].add(argument)
 
 proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
   ## Parses all command line arguments into one arguments object
   var argumentType = input
   for argument in arguments:
-    var firstElement = false
-    if argument.startsWith("--"):
-      argumentType = long
-      firstElement = true
-    elif argument.startsWith("-"):
-      argumentType = short
-      firstElement = true
+    var firstElement = true
+    if argument.startsWith("--") and argument.len > 2: argumentType = long
+    elif argument.startsWith("-") and argument.len > 1: argumentType = short
+    else: firstElement = false
     case argumentType
-      of input:
-        result.input.add(argument)
-      of long:
-        checkArgument("--", argument, result.keys, result.values, firstElement)
-      of short:
-        checkArgument("-", argument, result.shortKeys, result.values, firstElement)
+      of input: result.input.add(argument)
+      of long: checkArgument("--", argument, firstElement, result.keys, result.values)
+      of short: checkArgument("-", argument, firstElement, result.shortKeys, result.values)
