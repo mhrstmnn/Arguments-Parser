@@ -58,16 +58,16 @@ proc checkArgument(
       key.removePrefix(prefix)
       addKeyAndValue(key, "", keys, values)
     else:
-      if keys.len > 0:
-        values[keys[^1]].add(argument)
+      values[keys[^1]].add(argument)
 
 proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
   ## Parses all command line arguments into one arguments object
   var argumentType = input
   for argument in arguments:
+    if argument == "--" or argument == "-": continue
     var firstElement = true
-    if argument.startsWith("--") and argument.len > 2: argumentType = long
-    elif argument.startsWith("-") and argument.len > 1: argumentType = short
+    if argument.startsWith("--"): argumentType = long
+    elif argument.startsWith("-"): argumentType = short
     else: firstElement = false
     case argumentType
       of input: result.input.add(argument)
