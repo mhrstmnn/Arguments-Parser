@@ -1,4 +1,4 @@
-import unittest, Arguments_Parser, std/tables
+import unittest, arguments_parser, std/tables
 
 test "two words input and one key":
   check parseInput(@["foo", "bar", "--foo"]) == newArguments(

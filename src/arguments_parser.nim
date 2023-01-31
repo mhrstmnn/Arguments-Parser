@@ -4,8 +4,8 @@ import std/[os, tables, strutils]
 
 type
   Arguments = object
-    input, keys, shortKeys: seq[string]
-    values: Table[string, seq[string]]
+    input*, keys*, shortKeys*: seq[string]
+    values*: Table[string, seq[string]]
 
   Argument = enum
     input, long, short

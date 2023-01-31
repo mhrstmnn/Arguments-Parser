@@ -4,7 +4,7 @@
 # (better names are recommended, just make sure the name starts with the letter 't').
 # To run these tests, simply execute `nimble test`.
 
-import unittest, Arguments_Parser, std/tables
+import unittest, arguments_parser, std/tables
 
 test "one key":
   check parseInput(@["--foo"]) == newArguments(
