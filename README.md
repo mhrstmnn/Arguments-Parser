@@ -4,12 +4,9 @@ A parser for command line arguments
 
 ## Usage
 
-- Install package:
-  - `nimble install`
-- Add to dependencies in `*.nimble`:
-  - `requires "arguments_parser"`
-- Add to code in `*.nim`:
-  - `import arguments_parser`
+- Install package: `nimble install`
+- Add to dependencies: `requires "arguments_parser"`
+- Add to code: `import arguments_parser`
 
 ## Contribute
 
