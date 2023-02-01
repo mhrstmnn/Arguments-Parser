@@ -17,7 +17,7 @@ nimble install
 Alternatively install package manually and add it to dependencies:
 
 ```shell
-git clone https://github.com/mhrstmnn/Arguments-Parser
+git clone https://github.com/mhrstmnn/Arguments-Parser.git
 cd Arguments-Parser
 nimble install
 ```
