@@ -6,7 +6,9 @@ A parser for command line arguments
 
 - Install package: `nimble install`
 - Add to dependencies: `requires "arguments_parser"`
-- Add to code: `import arguments_parser`
+- Add to code:
+  - `import arguments_parser`
+  - `let arguments = parseInput()`
 
 ## Contribute
 
