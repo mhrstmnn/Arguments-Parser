@@ -2,13 +2,39 @@
 
 A parser for command line arguments
 
+## Installation
+
+Add package to dependencies and install it automatically:
+
+```nim
+requires "https://github.com/mhrstmnn/Arguments-Parser"
+```
+
+```shell
+nimble install
+```
+
+Alternatively install package manually and add it to dependencies:
+
+```shell
+git clone https://github.com/mhrstmnn/Arguments-Parser
+cd Arguments-Parser
+nimble install
+```
+
+```nim
+requires "arguments_parser"
+```
+
 ## Usage
 
-- Install package: `nimble install`
-- Add to dependencies: `requires "arguments_parser"`
-- Add to code:
-  - `import arguments_parser`
-  - `let arguments = parseInput()`
+Add package to code and use it:
+
+```nim
+import arguments_parser
+
+let arguments = parseInput()
+```
 
 ## Contribute
 
