@@ -20,8 +20,14 @@ proc newArguments*(
   values: values
 )
 
+proc removeQuotes(value: var string) =
+  for quote in ['"', '\'']:
+    value.removePrefix(quote)
+    value.removeSuffix(quote)
+
 proc addKeyAndValue(
-  key, value: string,
+  key: string,
+  value: var string,
   keys: var seq[string],
   values: var Table[string, seq[string]]
 ) =
@@ -29,6 +35,7 @@ proc addKeyAndValue(
     keys.add(key)
     values[key] = newSeq[string]()
   if value != "":
+    removeQuotes(value)
     values[key].add(value)
 
 proc checkArgument(
@@ -41,19 +48,24 @@ proc checkArgument(
     let splitArgument = argument.split(":")
     var key = splitArgument[0]
     key.removePrefix(prefix)
-    addKeyAndValue(key, splitArgument[1], keys, values)
+    var value = splitArgument[1]
+    addKeyAndValue(key, value, keys, values)
   elif argument.contains("="):
     let splitArgument = argument.split("=")
     var key = splitArgument[0]
     key.removePrefix(prefix)
-    addKeyAndValue(key, splitArgument[1], keys, values)
+    var value = splitArgument[1]
+    addKeyAndValue(key, value, keys, values)
   else:
     if firstElement:
       var key = argument
       key.removePrefix(prefix)
-      addKeyAndValue(key, "", keys, values)
+      var value = ""
+      addKeyAndValue(key, value, keys, values)
     else:
-      values[keys[^1]].add(argument)
+      var value = argument
+      removeQuotes(value)
+      values[keys[^1]].add(value)
 
 proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
   ## Parses all command line arguments into one arguments object
@@ -65,6 +77,9 @@ proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
     elif argument.startsWith("-"): argumentType = short
     else: firstElement = false
     case argumentType
-      of input: result.input.add(argument)
+      of input:
+        var value = argument
+        removeQuotes(value)
+        result.input.add(value)
       of long: checkArgument("--", argument, firstElement, result.keys, result.values)
       of short: checkArgument("-", argument, firstElement, result.shortKeys, result.values)
