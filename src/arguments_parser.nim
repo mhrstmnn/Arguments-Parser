@@ -38,29 +38,32 @@ proc addKeyAndValue(
     removeQuotes(value)
     values[key].add(value)
 
+proc splitArgument(
+  prefix, argument, sep: string,
+  keys: var seq[string],
+  values: var Table[string, seq[string]]
+) =
+  let arguments = argument.split(sep)
+  var
+    key = arguments[0]
+    value = arguments[1]
+  key.removePrefix(prefix)
+  addKeyAndValue(key, value, keys, values)
+
 proc checkArgument(
   prefix, argument: string,
   firstElement: bool,
   keys: var seq[string],
   values: var Table[string, seq[string]]
 ) =
-  if argument.contains(":"):
-    let splitArgument = argument.split(":")
-    var key = splitArgument[0]
-    key.removePrefix(prefix)
-    var value = splitArgument[1]
-    addKeyAndValue(key, value, keys, values)
-  elif argument.contains("="):
-    let splitArgument = argument.split("=")
-    var key = splitArgument[0]
-    key.removePrefix(prefix)
-    var value = splitArgument[1]
-    addKeyAndValue(key, value, keys, values)
+  if argument.contains(":"): splitArgument(prefix, argument, ":", keys, values)
+  elif argument.contains("="): splitArgument(prefix, argument, "=", keys, values)
   else:
     if firstElement:
-      var key = argument
+      var
+        key = argument
+        value = ""
       key.removePrefix(prefix)
-      var value = ""
       addKeyAndValue(key, value, keys, values)
     else:
       var value = argument
