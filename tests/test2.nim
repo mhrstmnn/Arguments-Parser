@@ -8,10 +8,18 @@ test "two words input and one key":
   )
 
 test "empty keys":
+  check parseInput(@["-"]) == newArguments()
+  check parseInput(@["--"]) == newArguments()
   check parseInput(@["-", "--"]) == newArguments()
-  check parseInput(@["foo", "bar", "-", "--"]) == newArguments(input = @["foo", "bar"])
-  check parseInput(@["-", "foo", "--", "bar"]) == newArguments(input = @["foo", "bar"])
-  check parseInput(@["-", "--", "foo", "bar"]) == newArguments(input = @["foo", "bar"])
+  check parseInput(@["--", "-"]) == newArguments()
+
+test "two words input and empty keys":
+  let arguments = newArguments(input = @["foo", "bar"])
+  check parseInput(@["-", "--", "foo", "bar"]) == arguments
+  check parseInput(@["-", "foo", "--", "bar"]) == arguments
+  check parseInput(@["foo", "-", "--", "bar"]) == arguments
+  check parseInput(@["foo", "-", "bar", "--"]) == arguments
+  check parseInput(@["foo", "bar", "-", "--"]) == arguments
 
 test "write output to file":
   check parseInput(@["main.c", "-o", "main"]) == newArguments(
@@ -21,35 +29,18 @@ test "write output to file":
   )
 
 test "one key with one value in quotes":
-  check parseInput(@["--foo:\"foo bar\""]) == newArguments(
+  let arguments = newArguments(
     keys = @["foo"],
     values = {"foo": @["foo bar"]}.toTable
   )
-  check parseInput(@["--foo:'foo bar'"]) == newArguments(
-    keys = @["foo"],
-    values = {"foo": @["foo bar"]}.toTable
-  )
-  check parseInput(@["--foo=\"foo bar\""]) == newArguments(
-    keys = @["foo"],
-    values = {"foo": @["foo bar"]}.toTable
-  )
-  check parseInput(@["--foo='foo bar'"]) == newArguments(
-    keys = @["foo"],
-    values = {"foo": @["foo bar"]}.toTable
-  )
-  check parseInput(@["--foo", "\"foo bar\""]) == newArguments(
-    keys = @["foo"],
-    values = {"foo": @["foo bar"]}.toTable
-  )
-  check parseInput(@["--foo", "'foo bar'"]) == newArguments(
-    keys = @["foo"],
-    values = {"foo": @["foo bar"]}.toTable
-  )
+  check parseInput(@["--foo:\"foo bar\""]) == arguments
+  check parseInput(@["--foo:'foo bar'"]) == arguments
+  check parseInput(@["--foo=\"foo bar\""]) == arguments
+  check parseInput(@["--foo='foo bar'"]) == arguments
+  check parseInput(@["--foo", "\"foo bar\""]) == arguments
+  check parseInput(@["--foo", "'foo bar'"]) == arguments
 
 test "two words input in quotes":
-  check parseInput(@["\"foo bar\""]) == newArguments(
-    input = @["foo bar"],
-  )
-  check parseInput(@["'foo bar'"]) == newArguments(
-    input = @["foo bar"],
-  )
+  let arguments = newArguments(input = @["foo bar"])
+  check parseInput(@["\"foo bar\""]) == arguments
+  check parseInput(@["'foo bar'"]) == arguments
