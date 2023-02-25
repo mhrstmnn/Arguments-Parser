@@ -71,19 +71,21 @@ proc checkArgument(
       removeQuotes(value)
       values[keys[^1]].add(value)
 
-proc parseInput*(arguments: seq[string] = commandLineParams()): Arguments =
+proc parseInput*(arguments = commandLineParams()): Arguments =
   ## Parses all command line arguments into one arguments object
   var argumentType = input
   for argument in arguments:
     if argument == "--" or argument == "-": continue
+
     var firstElement = true
     if argument.startsWith("--"): argumentType = long
     elif argument.startsWith("-"): argumentType = short
     else: firstElement = false
+
     case argumentType
-      of input:
-        var value = argument
-        removeQuotes(value)
-        result.input.add(value)
-      of long: checkArgument("--", argument, firstElement, result.keys, result.values)
-      of short: checkArgument("-", argument, firstElement, result.shortKeys, result.values)
+    of input:
+      var value = argument
+      removeQuotes(value)
+      result.input.add(value)
+    of long: checkArgument("--", argument, firstElement, result.keys, result.values)
+    of short: checkArgument("-", argument, firstElement, result.shortKeys, result.values)
