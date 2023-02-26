@@ -21,10 +21,15 @@ proc newArguments*(
 )
 
 proc removeQuotes(value: var string) =
-  for quote in ['"', '\'']:
-    if value.startsWith(quote) and value.endsWith(quote):
-      value.removePrefix(quote)
-      value.removeSuffix(quote)
+  const
+    quote1 = '"'
+    quote2 = '\''
+  if value.startsWith(quote1) and value.endsWith(quote1):
+    value.removePrefix(quote1)
+    value.removeSuffix(quote1)
+  elif value.startsWith(quote2) and value.endsWith(quote2):
+    value.removePrefix(quote2)
+    value.removeSuffix(quote2)
 
 proc addKeyAndValue(
   key: string,
