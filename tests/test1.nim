@@ -38,10 +38,9 @@ test "one short key":
   )
 
 test "multiple short keys":
-  var
-    arguments = parseInput(@["-a", "-b", "-c", "-d"])
-    argumentsFlags = arguments.flags
+  let arguments = parseInput(@["-a", "-b", "-c", "-d"])
   check arguments.shortKeys == @["a", "b", "c", "d"]
+  var argumentsFlags = arguments.flags
   argumentsFlags.sort()
   check argumentsFlags == @["a", "b", "c", "d"]
   check arguments.values == {

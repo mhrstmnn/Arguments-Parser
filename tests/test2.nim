@@ -54,13 +54,13 @@ test "two words input in quotes":
   check parseInput(@["\"foo bar\""]) == arguments
   check parseInput(@["'foo bar'"]) == arguments
 
-test "four words input, one in quotes":
-  let arguments1 = newArguments(input = @["foo bar", "foo bar"])
-  check parseInput(@["\"foo bar\"", "foo bar"]) == arguments1
-  check parseInput(@["'foo bar'", "foo bar"]) == arguments1
-  let arguments2 = newArguments(input = @["foo bar", "foo bar"])
-  check parseInput(@["foo bar", "\"foo bar\""]) == arguments2
-  check parseInput(@["foo bar", "'foo bar'"]) == arguments2
+test "four words input, two in quotes":
+  let arguments1 = newArguments(input = @["foo bar", "foo", "bar"])
+  check parseInput(@["\"foo bar\"", "foo", "bar"]) == arguments1
+  check parseInput(@["'foo bar'", "foo", "bar"]) == arguments1
+  let arguments2 = newArguments(input = @["foo", "bar", "foo bar"])
+  check parseInput(@["foo", "bar", "\"foo bar\""]) == arguments2
+  check parseInput(@["foo", "bar", "'foo bar'"]) == arguments2
 
 test "two words input and one quote":
   check parseInput(@["\"foo", "bar"]) == newArguments(input = @["\"foo", "bar"])
