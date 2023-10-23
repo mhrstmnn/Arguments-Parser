@@ -1,80 +1,81 @@
 ## A parser for command line arguments
 
-import std/[os, tables, strutils]
+import std/[os, tables, strutils, options]
 
 type
   Arguments* = object
-    input*, keys*, shortKeys*: seq[string]
+    input*, keys*, shortKeys*, flags*: seq[string]
     values*: Table[string, seq[string]]
 
   Argument = enum
     input, long, short
 
 proc newArguments*(
-  input, keys, shortKeys = newSeq[string](),
+  input, keys, shortKeys, flags = newSeq[string](),
   values = initTable[string, seq[string]]()
 ): Arguments = Arguments(
   input: input,
   keys: keys,
   shortKeys: shortKeys,
+  flags: flags,
   values: values
 )
 
-proc removeQuotes(value: var string) =
+proc removeQuotes(value: string): string =
+  result = value
   const
     quote1 = '"'
     quote2 = '\''
-  if value.startsWith(quote1) and value.endsWith(quote1):
-    value.removePrefix(quote1)
-    value.removeSuffix(quote1)
-  elif value.startsWith(quote2) and value.endsWith(quote2):
-    value.removePrefix(quote2)
-    value.removeSuffix(quote2)
+  if result.startsWith(quote1) and result.endsWith(quote1):
+    result.removePrefix(quote1)
+    result.removeSuffix(quote1)
+  elif result.startsWith(quote2) and result.endsWith(quote2):
+    result.removePrefix(quote2)
+    result.removeSuffix(quote2)
 
 proc addKeyAndValue(
   key: string,
-  value: var string,
-  keys: var seq[string],
-  values: var Table[string, seq[string]]
+  value: Option[string],
+  resultKeys: var seq[string],
+  resultValues: var Table[string, seq[string]]
 ) =
-  if key != "" and not (key in keys):
-    keys.add(key)
-    values[key] = newSeq[string]()
-  if value != "":
-    removeQuotes(value)
-    values[key].add(value)
+  if key != "" and not (key in resultKeys):
+    resultKeys.add(key)
+    resultValues[key] = newSeq[string]()
+  if value.isSome:
+    resultValues[key].add(removeQuotes(value.get))
 
 proc splitArgument(
   prefix, argument, sep: string,
-  keys: var seq[string],
-  values: var Table[string, seq[string]]
+  resultKeys: var seq[string],
+  resultValues: var Table[string, seq[string]]
 ) =
   let arguments = argument.split(sep)
-  var
-    key = arguments[0]
-    value = arguments[1]
+  var key = arguments[0]
   key.removePrefix(prefix)
-  addKeyAndValue(key, value, keys, values)
+  let value = some(arguments[1])
+  addKeyAndValue(key, value, resultKeys, resultValues)
 
-proc checkArgument(
+proc addArgument(
   prefix, argument: string,
   firstElement: bool,
-  keys: var seq[string],
-  values: var Table[string, seq[string]]
+  resultKeys: var seq[string],
+  resultValues: var Table[string, seq[string]]
 ) =
-  if argument.contains(":"): splitArgument(prefix, argument, ":", keys, values)
-  elif argument.contains("="): splitArgument(prefix, argument, "=", keys, values)
+  if argument.contains(":"): splitArgument(prefix, argument, ":", resultKeys, resultValues)
+  elif argument.contains("="): splitArgument(prefix, argument, "=", resultKeys, resultValues)
   else:
     if firstElement:
-      var
-        key = argument
-        value = ""
+      var key = argument
       key.removePrefix(prefix)
-      addKeyAndValue(key, value, keys, values)
+      let value = none(string)
+      addKeyAndValue(key, value, resultKeys, resultValues)
     else:
-      var value = argument
-      removeQuotes(value)
-      values[keys[^1]].add(value)
+      resultValues[resultKeys[^1]].add(removeQuotes(argument))
+
+proc addFlags(resultValues: Table[string, seq[string]], resultFlags: var seq[string]) =
+  for key in resultValues.keys:
+    if resultValues[key].len == 0: resultFlags.add(key)
 
 proc parseInput*(arguments = commandLineParams()): Arguments =
   ## Parses all command line arguments into one arguments object
@@ -88,9 +89,8 @@ proc parseInput*(arguments = commandLineParams()): Arguments =
     else: firstElement = false
 
     case argumentType
-    of input:
-      var value = argument
-      removeQuotes(value)
-      result.input.add(value)
-    of long: checkArgument("--", argument, firstElement, result.keys, result.values)
-    of short: checkArgument("-", argument, firstElement, result.shortKeys, result.values)
+    of input: result.input.add(removeQuotes(argument))
+    of long: addArgument("--", argument, firstElement, result.keys, result.values)
+    of short: addArgument("-", argument, firstElement, result.shortKeys, result.values)
+
+  addFlags(result.values, result.flags)
