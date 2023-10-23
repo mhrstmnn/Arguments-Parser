@@ -67,3 +67,7 @@ test "two words input and one quote":
   check parseInput(@["foo", "bar\""]) == newArguments(input = @["foo", "bar\""])
   check parseInput(@["'foo", "bar"]) == newArguments(input = @["'foo", "bar"])
   check parseInput(@["foo", "bar'"]) == newArguments(input = @["foo", "bar'"])
+
+test "two words input in four quotes":
+  check parseInput(@["'\"foo bar\"'"]) == newArguments(input = @["\"foo bar\""])
+  check parseInput(@["\"'foo bar'\""]) == newArguments(input = @["'foo bar'"])
